@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This XML file declares which signature|privileged permissions should be granted to privileged
+applications that come with the platform
+-->
+<permissions>
+    <privapp-permissions package="com.android.systemui">
+        <permission name="android.permission.MANAGE_VOICE_KEYPHRASES"/>
+        <!-- Add reboot permission for subsidy lock request8 -->
+        <permission name="android.permission.REBOOT"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.quicksearchbox">
+        <permission name="android.permission.GLOBAL_SEARCH"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.hotwordenrollment.okgoogle">
+        <permission name="android.permission.KEYPHRASE_ENROLLMENT_APPLICATION"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.hotwordenrollment.xgoogle">
+        <permission name="android.permission.KEYPHRASE_ENROLLMENT_APPLICATION"/>
+        <permission name="android.permission.INTERACT_ACROSS_USERS"/>
+    </privapp-permissions>
+
+    <privapp-permissions package="com.android.settings.intelligence">
+        <permission name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+        <permission name="android.permission.MASTER_CLEAR"/>
+    </privapp-permissions>
+
+    <!--  Liverpool code for AX3207-133 by xueyabin at 20-11-11 start -->
+    <privapp-permissions package="com.android.wallpaperpicker">
+        <permission name="android.permission.SET_WALLPAPER"/>
+        <permission name="android.permission.WRITE_MEDIA_STORAGE"/>
+        <permission name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+        <permission name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        <permission name="android.permission.READ_EXTERNAL_STORAGE"/>
+    </privapp-permissions>
+    <!--  Liverpool code for AX3207-133 by xueyabin at 20-11-11 end -->
+</permissions>

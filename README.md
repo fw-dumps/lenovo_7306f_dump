@@ -1,0 +1,14 @@
+# full_m7-user 11 RP1A.200720.011 977 release-keys
+- manufacturer: lenovo
+- platform: mt6761
+- codename: 7306F
+- flavor: full_m7-user
+- release: 11
+- id: RP1A.200720.011
+- incremental: TB-7306F_S000022_210301_ROW
+- tags: release-keys
+- fingerprint: Lenovo/LenovoTB-7306F_GO/7306F:11/RP1A.200720.011/S000022_210301_ROW:user/release-keys
+- is_ab: true
+- brand: Lenovo
+- branch: full_m7-user-11-RP1A.200720.011-977-release-keys
+- repo: lenovo_7306f_dump

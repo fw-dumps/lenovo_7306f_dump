@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <!--AX3207 code for ANDYSEVEN-1625/ANDYSEVEN-1626 by taoqiong at 2020-12-30 start  -->
+    <allow-implicit-broadcast action="android.intent.action.ACTION_POWER_CONNECTED" />
+    <allow-implicit-broadcast action="android.intent.action.ACTION_POWER_DISCONNECTED" />
+    <!--AX3207 code for ANDYSEVEN-1625/ANDYSEVEN-1626 by taoqiong at 2020-12-30 end  -->
+</config>

@@ -1,0 +1,100 @@
+# MTK project .rc configure
+
+import init.mt6761.usb.rc
+
+on init
+    mkdir /mnt/media_rw/usbotg 0700 media_rw media_rw
+    mkdir /storage/usbotg 0700 root root
+# AX3207 code for AX3207-426 by shiwenqiang at 2020/11/10 start
+    mkdir /system/etc/demomode 0755 root root
+    mkdir /system/etc/demomode/DemoMode 0755 root root
+# AX3207 code for AX3207-426 by shiwenqiang at 2020/11/10 end
+
+on post-fs-data
+    # /dev/block/bootdevice/by-name/lenovocust
+    wait /dev/block/platform/bootdevice/by-name/lenovocust
+    mount ext4 /dev/block/platform/bootdevice/by-name/lenovocust /lenovocust noatime nosuid nodev barrier=1
+    restorecon_recursive   /lenovocust
+    chown system system /lenovocust
+    chmod 0771 /lenovocust
+
+#Camera
+    chmod 0660 /dev/MAINAF
+    chown system camera /dev/MAINAF
+
+    chmod 0660 /dev/MAINAF2
+    chown system camera /dev/MAINAF2
+
+    chmod 0660 /dev/SUBAF
+    chown system camera /dev/SUBAF
+
+    chmod 0660 /dev/GAF001AF
+    chown system camera /dev/GAF001AF
+
+    chmod 0660 /dev/DW9714AF
+    chown system camera /dev/DW9714AF
+
+    chmod 0660 /dev/LC898212AF
+    chown system camera /dev/LC898212AF
+
+    chmod 0660 /dev/BU64745GWZAF
+    chown system camera /dev/BU64745GWZAF
+
+#SMB
+    chown system system /proc/smb/ScreenComm
+    chmod 0660 /proc/smb/ScreenComm
+
+    chmod 0660 /dev/spm
+    chown system system /dev/spm
+
+# Huaqin add for AX3207-206 by kejunlin at 2020/10/19 start
+#SarSensor
+    chown system system /sys/class/sensor/m_situ_misc/sardata
+    chmod 0660 /sys/class/sensor/m_situ_misc/sardata
+    chown system system /sys/class/sensor/m_situ_misc/saractive
+    chmod 0660 /sys/class/sensor/m_situ_misc/saractive
+    chown system system /sys/class/sensor/m_situ_misc/sarbatch
+    chmod 0660 /sys/class/sensor/m_situ_misc/sarbatch
+    chown system system /sys/devices/platform/charger/power_supply/mtk-master-charger/redled
+    chmod 0660 /sys/devices/platform/charger/power_supply/mtk-master-charger/redled
+    chown system system /sys/devices/platform/1000d000.pwrap/1000d000.pwrap:main_pmic/leds-mt6357/leds/green/brightness
+    chmod 0660 /sys/devices/platform/1000d000.pwrap/1000d000.pwrap:main_pmic/leds-mt6357/leds/green/brightness
+
+# Huaqin add for AX3207-206 by kejunlin at 2020/10/19 end
+
+# Huaqin add for M7RSMT-51 by lishanju at 2020/11/09 start
+#pcba config
+    chown system /sys/devices/virtual/huaqin/interface/hw_info/pcba_config
+    chmod 0660 /sys/devices/virtual/huaqin/interface/hw_info/pcba_config
+# Huaqin add for M7RSMT-51 by lishanju at 2020/11/09 end
+
+on init
+    # Refer to http://source.android.com/devices/tech/storage/index.html
+    # It said, "Starting in Android 4.4, multiple external storage devices are surfaced to developers through
+    #           Context.getExternalFilesDirs(), Context.getExternalCacheDirs(), and Context.getObbDirs().
+    #           External storage devices surfaced through these APIs must be a semi-permanent part of the device (such as an SD card slot in a battery compartment).
+    #           Developers expect data stored in these locations to be available over long periods of time."
+    # Therefore, if the target doesn't support sd hot-plugging (Ex: the SD card slot in a battery compartment), we need to export SECONDARY_STORAGE in 'boot' section
+    #
+    # export SECONDARY_STORAGE /storage/sdcard1
+
+service fuse_usbotg /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usbotg /storage/usbotg
+    class late_start
+    disabled
+
+service spm_script /vendor/bin/spm_loader
+    user system
+    group system
+    class core
+    oneshot
+
+# Huaqin add for AX3207-85 and AX3207-369 by lishanju at 2020/10/21 start
+service nvram_lenovo system/vendor/bin/nvram_lenovo
+    class main
+    user root
+    disabled
+    oneshot
+on property:vendor.service.nvram_init=Ready
+chmod 0644 /system/vendor/bin/nvram_lenovo
+start nvram_lenovo
+# Huaqin add for AX3207-85 and AX3207-369 by lishanju at 2020/10/21 end

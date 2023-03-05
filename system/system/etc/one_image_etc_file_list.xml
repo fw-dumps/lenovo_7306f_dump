@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <array name="list_eea">
+        <item>/system/etc/oneimage/eea_feature.xml:/data/system/oneimage/etc/sysconfig/country_feature.xml</item>
+    </array>
+
+    <array name="list_ru">
+        <item>/system/etc/oneimage/ru_feature.xml:/data/system/oneimage/etc/sysconfig/country_feature.xml</item>
+    </array>
+
+    <array name="list_tr">
+        <item>/system/etc/oneimage/tr_feature.xml:/data/system/oneimage/etc/sysconfig/country_feature.xml</item>
+    </array>
+
+</resources>

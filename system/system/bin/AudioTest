@@ -1,0 +1,270 @@
+#!/system/bin/sh
+#########################################################################
+#   AudioTest chmod 777 AudioTest                                       #
+#   adb push AudioTest system/bin                                       #
+#########################################################################
+
+
+#HQ:tanyang
+#input:    MainMic = 1, sub mic = 2, headset mic = 3
+#output:   receiver =1, headset = 2, speaker = 3
+#on-off:   on = 1, off =0
+#Audio_PGA1_Setting:0 1 2 3 4 5 -> 0db 6db 12db 18db 24db 30db
+#headset mic gain need set Audio_PGA1_Setting and Audio_PGA2_Setting
+
+function print_usage(){
+    echo "Usage:"$0" input output on-off"
+    echo "input    [MainMic = 1]  [sub mic = 2] [headset mic = 3]"
+    echo "output   [receiver = 1] [headset = 2] [speaker = 3]"
+    echo "on-off   [on = 1]       [off = 0]"
+    echo "Example:"
+    echo "adb shell AudioTest 0 1 1 # rcv playback"
+    echo "adb shell AudioTest 0 1 0 # close rcv"
+    echo "adb shell AudioTest 0 3 1 # spk playback"
+    echo "adb shell AudioTest 0 3 0 # close spk"
+    echo "adb shell AudioTest 1 0 1 # main mic record, record to: /sdcard/tinycap-main-mic.wav"
+    echo "adb shell AudioTest 1 0 0 # close main mic"
+}
+
+case $1 in
+    "0") #playback
+    case $2 in
+        "1") #receiver
+            case $3 in
+             "1")
+              tinymix -D 1  "Receiver_Speaker_Switch" 1
+              tinymix -D 1  "Speaker_Amp_Switch"     1
+              tinymix -D 1  "Ext_Speaker_Amp_Switch" 1
+              echo "start receiver playback test"
+              tinyplay /data/misc/media/rec.wav -D 1
+              ;;
+             "0")
+              tinymix -D 1  "Speaker_Amp_Switch"     0
+              tinymix -D 1  "Ext_Speaker_Amp_Switch" 0
+              tinymix -D 1  "Receiver_Speaker_Switch" 0
+              echo "stop receiver playback"
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "3") #speaker
+            case $3 in
+             "1")
+              tinymix -D 1  "Speaker_Amp_Switch"     1
+              tinymix -D 1  "Ext_Speaker_Amp_Switch" 1
+              echo "start speaker playback test"
+              tinyplay  /data/misc/media/spk.wav -D 1
+              ;;
+             "0")
+              tinymix -D 1  "Speaker_Amp_Switch"     0
+              tinymix -D 1  "Ext_Speaker_Amp_Switch" 0
+              echo "stop speaker playback"
+              ;;
+            *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+         *)
+        print_usage
+            exit 1
+         ;;
+    esac
+     ;;
+    "1") #Main Mic
+    case $2 in
+        "0") #record test
+            case $3 in
+             "1")
+              tinymix -D 1 "Audio_MicSource1_Setting"  "ADC1"
+              tinymix -D 1 "Audio_ADC_1_Switch"  "On"
+              tinymix -D 1 "Audio_ADC_2_Switch"  "On"
+              tinymix -D 1 "Audio_Preamp1_Switch"  "IN_ADC1"
+              tinymix -D 1 "Audio_Preamp2_Switch"  "IN_ADC1"
+              tinymix -D 1  Audio_PGA1_Setting 3;#main mic gain
+              tinymix -D 1  Audio_PGA2_Setting 3;
+              tinycap /sdcard/tinycap-main-mic.wav -D 1 -d 1 -c 1 -r 48000 -b 16 -T 10
+              echo "open main mic record test";
+              ;;
+             "0")
+              tinymix -D 1 "Audio_Preamp1_Switch"  "OPEN"
+              tinymix -D 1 "Audio_Preamp2_Switch"  "OPEN"
+              tinymix -D 1 "Audio_ADC_1_Switch"  "Off"
+              tinymix -D 1 "Audio_ADC_2_Switch"  "Off"
+              echo "close main mic record";
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "1") #receiver
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=1,1;
+              tinymix -D 1  Lineout_PGAL_GAIN  4
+              tinymix -D 1  Lineout_PGAR_GAIN  4
+              tinymix -D 1  Audio_PGA1_Setting 3;#main mic gain
+              tinymix -D 1  Audio_PGA2_Setting 3;
+              echo "open main mic to receiver loopback";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close main mic to receiver loopback";
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "2") #headset
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=1,2;
+              tinymix -D 1 Headset_PGAL_GAIN 5;
+              tinymix -D 1 Headset_PGAR_GAIN 5;
+              tinymix -D 1 Audio_PGA1_Setting 3;
+              tinymix -D 1 Audio_PGA2_Setting 3;
+              echo "open MainMic to headset loopback";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close MainMic to headset loopback";
+              ;;
+            *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "3") #speaker
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=1,3;
+              tinymix -D 1  Lineout_PGAL_GAIN  4
+              tinymix -D 1  Lineout_PGAR_GAIN  4
+              tinymix -D 1 Audio_PGA1_Setting 3;
+              tinymix -D 1 Audio_PGA2_Setting 3;
+              echo "open MainMic to  speaker";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close MainMic to  speaker";
+              ;;
+            *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+         *)
+        print_usage
+            exit 1
+         ;;
+    esac
+     ;;
+    "3") #headset mic
+    case $2 in
+        "0") #headset mic record
+            case $3 in
+             "1")
+              tinymix -D 1 "Audio_MicSource1_Setting" "ADC2"
+              tinymix -D 1 "Audio_ADC_1_Switch" "On"
+              tinymix -D 1 "Audio_ADC_2_Switch" "On"
+              tinymix -D 1 "Audio_Preamp1_Switch" "IN_ADC2"
+              tinymix -D 1 "Audio_Preamp2_Switch" "IN_ADC2"
+              echo "open headset mic to record";
+              tinycap /sdcard/tinycap-headset-mic.wav -D 1 -d 1 -c 1 -r 48000 -b 16 -T 10
+              ;;
+             "0")
+              tinymix -D 1 "Audio_Preamp1_Switch" "OPEN"
+              tinymix -D 1 "Audio_Preamp2_Switch" "OPEN"
+              tinymix -D 1 "Audio_ADC_1_Switch" "Off"
+              tinymix -D 1 "Audio_ADC_2_Switch" "Off"
+              echo "close headset mic to record";
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "1") #headset
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=2,1;
+              tinymix -D 1  Lineout_PGAL_GAIN  4
+              tinymix -D 1  Lineout_PGAR_GAIN  4
+              tinymix -D 1  Audio_PGA1_Setting 3;
+              tinymix -D 1  Audio_PGA2_Setting 3;
+              echo "open headset mic to receiver loopback";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close headset mic to receiver loopback";
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "2") #receiver
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=2,2;
+              tinymix -D 1  Headset_PGAL_GAIN 5;
+              tinymix -D 1  Headset_PGAR_GAIN 5;
+              tinymix -D 1  Audio_PGA1_Setting 3;
+              tinymix -D 1  Audio_PGA2_Setting 3;
+              echo "open headset mic to headset loopback";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close headset mic to headset loopback";
+              ;;
+               *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+        "3") #speaker
+            case $3 in
+             "1")
+              AudioSetParam SET_LOOPBACK_TYPE=2,3;
+              tinymix -D 1  Lineout_PGAL_GAIN  4
+              tinymix -D 1  Lineout_PGAR_GAIN  4
+              tinymix -D 1  Audio_PGA1_Setting 3;
+              tinymix -D 1  Audio_PGA2_Setting 3;
+              echo "open headset mic to speaker loopback";
+              ;;
+             "0")
+              AudioSetParam SET_LOOPBACK_TYPE=0;
+              echo "close headset mic to speaker loopback";
+              ;;
+              *)
+              print_usage
+              exit 1
+              ;;
+          esac
+         ;;
+         *)
+        print_usage
+        exit 1
+         ;;
+    esac
+     ;;
+    *)
+        print_usage
+        exit 1
+    ;;
+esac
+
+exit 0

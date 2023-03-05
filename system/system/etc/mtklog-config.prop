@@ -1,0 +1,22 @@
+# mtk log path can be set as system_data or device_storage or portable_storage
+mtklog_path = device_storage
+com.mediatek.log.mobile.customer = MTK_Internal
+com.mediatek.log.mobile.AllMode = true
+
+# Huaqin add for AX3207-92 by kejunlin at 2020/10/15 start
+# AX3207 add for M7RSMT-80 by xueyabin at 2020/11/23 start
+com.mediatek.log.mobile.enabled = false
+com.mediatek.log.modem.enabled = false
+com.mediatek.log.net.enabled = false
+com.mediatek.log.connsysfw.enabled = false
+com.mediatek.log.gpshost.enabled = false
+com.mediatek.log.bthost.enabled = false
+# AX3207 add for M7RSMT-80 by xueyabin at 2020/11/23 end
+
+com.mediatek.log.mobile.maxsize = 5000
+com.mediatek.log.mobile.totalmaxsize = 5000
+com.mediatek.log.modem.maxsize = 2000
+com.mediatek.log.net.maxsize =600
+com.mediatek.log.connsysfw.maxsize = 2000
+com.mediatek.log.bthost.maxsize = 2000
+# Huaqin add for AX3207-92 by kejunlin at 2020/10/15 end
